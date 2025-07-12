@@ -2,14 +2,14 @@ import { View, SafeAreaView, ScrollView, Image } from "react-native"
 import {useState } from "react"
 import {signOut} from "firebase/auth"
 import {auth} from "@/firebaseConfig"
-import { useGlobalContext } from "@/context/GlobalProvider"
 import {images} from "@/constants/index"
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
 import Loader from "@/components/Loader"
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function HomeScreen() {
-  const { userData} = useGlobalContext()
+  const userData = useAuthStore((state) => state.userData);
   const [loading, setLoading] = useState(false)
 
   // Sign out user

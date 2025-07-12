@@ -2,13 +2,13 @@ import { View, Text, Image} from "react-native"
 import { Tabs, Redirect} from "expo-router"
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import { icons } from "@/constants/"
 import primary from "@/constants/colors/primary";
 import secondary from "@/constants/colors/secondary";
 import type { TabIconProps } from "@/types";
 import Loader from "@/components/Loader"
 import CustomHeader from "@/components/CustomHeader";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const TabIcon = ({
   icon, 
@@ -34,9 +34,10 @@ const TabIcon = ({
 }
 
 export default function TabsLayout() {
-  const { loading, isLogged } = useGlobalContext();
+  const loading = useAuthStore((state) => state.loading);
+  const isLogged = useAuthStore((state) => state.isLogged);
 
-  if (!loading && !isLogged) return <Redirect href="/(auth)/sign-in" />;
+  if (!loading && !isLogged) return <Redirect href="/(auth)/sign-in"/>;
 
   return (
     <SafeAreaView className="flex-1 bg-black " edges={["bottom","top"]}>

@@ -1,12 +1,13 @@
 import { Redirect, Stack } from "expo-router";
 import { View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useGlobalContext } from "@/context/GlobalProvider";
 import Loader  from "@/components/Loader";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const AuthLayout = () => {
-  const { loading, isLogged } = useGlobalContext();
+  const loading = useAuthStore((state) => state.loading);
+  const isLogged = useAuthStore((state) => state.isLogged);
 
   if (isLogged) return <Redirect href="/(tabs)/create"/>;
 

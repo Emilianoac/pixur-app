@@ -1,11 +1,10 @@
 import { View, SafeAreaView, ScrollView, Image, Pressable, Text} from "react-native"
 import { Link } from "expo-router";
+import { useAuthStore } from "@/store/useAuthStore";
 import type { ImageData } from "@/types";
 
-import { useGlobalContext } from "@/context/GlobalProvider";
-
 export default  function ProfileScreen() {
-  const { userData } = useGlobalContext();
+  const userData = useAuthStore((state) => state.userData);
 
   // Sort images by timestamp
   const sortedImages = userData && userData.images 

@@ -8,15 +8,15 @@ import { realTimeDB } from "@/firebaseConfig";
 
 import secondary from "@/constants/colors/secondary";
 import formatDate from "@/utils/formatDate";
-import {useGlobalContext} from "@/context/GlobalProvider";
 
 import type {ImageData} from "@/types/index";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function ImageProfileScreen() {
+  const user = useAuthStore((state) => state.user);
 
   // Get the image id from the URL
   const { id } = useLocalSearchParams();
-  const { user } = useGlobalContext();
   const [image, setImage] = useState<ImageData | null>(null);
 
   useEffect(() => {

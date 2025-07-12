@@ -3,7 +3,6 @@ import {useState } from "react"
 import { router } from "expo-router"
 import { Link } from "expo-router"
 
-import { useGlobalContext } from "@/context/GlobalProvider"
 import { images } from "@/constants"
 import { signIn } from "@/utils/firebaseAuth"
 

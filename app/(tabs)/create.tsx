@@ -7,8 +7,6 @@ import * as ImageManipulator from "expo-image-manipulator";
 import useCreateImage from "@/hooks/useCreateImage"
 import { icons } from "@/constants/index";
 import primaryColors from "@/constants/colors/primary"
-import { useGlobalContext } from "@/context/GlobalProvider"
-
 import { storage, realTimeDB } from "@/firebaseConfig"
 import { set, ref as RealTimeRef, runTransaction } from "firebase/database"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
@@ -16,6 +14,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import CustomButton from "@/components/CustomButton"
 import FormField from "@/components/FormField"
 import Loader from "@/components/Loader"
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface FormData {
   prompt: string | null
@@ -38,7 +37,7 @@ interface ImageData {
 }
 
 export default function CreateScreen() {
-  const { user } = useGlobalContext();
+  const user = useAuthStore((state) => state.user);
   const [savedImage, setSavedImage] = useState(false)
   const [loading, setLoading] = useState(false)
   const [image, setImage] = useState<ImageData | null>(null);
