@@ -1,19 +1,15 @@
-// components/CustomHeader.js
-import { View, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Image, Text } from "react-native";
 import {images} from "@/constants/index"
 
 const CustomHeader = () => {
   return (
-    <SafeAreaView className="bg-secondary-600">
-      <View className="w-full p-1 items-center justify-center">
-        <Image
-          source={images.logo}
-          className="w-[80px] rounded-md"
-          resizeMode="contain"
-        />
-      </View>
-    </SafeAreaView>
+    <View className="w-full selection:bg-secondary-600 items-center justify-center" style={{height: 50}}>
+      <Image
+        source={images.logo}
+        className="w-20 h-10"
+        resizeMode="contain"
+      />
+    </View>
   );
 };
 

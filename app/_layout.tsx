@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack, SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
-import GlobalProvider from "@/context/GlobalProvider";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import "./global.css";
+import GlobalProvider from "@/context/GlobalProvider";
 import CustomHeader from "@/components/CustomHeader";
 
 // Prevent the splash screen from auto-hiding
@@ -44,22 +44,12 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <Stack>
           <Stack.Screen 
-            name="index" 
-            options={{ 
-              headerShown: false, 
-            }}
-          />
-          <Stack.Screen 
-            name="(auth)"
-            options={{
-              headerShown: false, 
-            }} 
-          />
-          <Stack.Screen 
             name="(tabs)" 
-            options={{ 
-              header : () => <CustomHeader />
-            }}
+            options={{ headerShown: false}}
+          />
+          <Stack.Screen 
+            name="(auth)" 
+            options={{ headerShown: false}}
           />
         </Stack>
       </SafeAreaProvider>
