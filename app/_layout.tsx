@@ -3,7 +3,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Stack, SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
 import GlobalProvider from "@/context/GlobalProvider";
-
+import "./global.css";
 import CustomHeader from "@/components/CustomHeader";
 
 // Prevent the splash screen from auto-hiding
