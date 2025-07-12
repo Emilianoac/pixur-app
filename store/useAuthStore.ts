@@ -1,18 +1,18 @@
 import { create } from "zustand";
-import { onAuthStateChanged, Unsubscribe, type User } from "firebase/auth";
-import { ref, onValue } from "firebase/database";
-import { auth, realTimeDB } from "@/firebaseConfig";
+import { subscribeToAuthState } from "@/services/auth/authService";
+import { subscribeToUserData } from "@/services/user/userService";
+import { mapFirebaseUserToAppUser } from "@/services/user/mapUser";
+import type { AppUser } from "@/types/user";
 import type { userData } from "@/types";
 
 interface AuthState {
   isLogged: boolean;
-  user: User | null;
+  user: AppUser | null;
   loading: boolean;
   userData: userData | null;
   setState: (partial: Partial<AuthState>) => void;
   initAuthListener: () => () => void;
 }
-
 
 export const useAuthStore = create<AuthState>((set) => ({
   isLogged: false,
@@ -23,26 +23,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   setState: (partial) => set((state) => ({ ...state, ...partial })),
 
   initAuthListener: () => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsubscribe = subscribeToAuthState((u) => {
       if (u) {
-        set({
-          isLogged: true,
-          user: u,
-          loading: false,
-        });
+        const appUser = mapFirebaseUserToAppUser(u);
+        set({ isLogged: true, user: appUser, loading: false });
 
-        const userRef = ref(realTimeDB, `users/${u.uid}`);
-        onValue(userRef, (snapshot) => {
-          const data = snapshot.val();
+        subscribeToUserData(appUser.id, (data) => {
           set({ userData: data });
         });
       } else {
-        set({
-          isLogged: false,
-          user: null,
-          userData: null,
-          loading: false,
-        });
+        set({ isLogged: false, user: null, userData: null, loading: false});
       }
     });
 
