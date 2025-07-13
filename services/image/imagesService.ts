@@ -23,7 +23,8 @@ export async function saveImage(userId: string, image: NewImageData) {
   const blob = await response.blob();
 
   // Upload the image to Firebase Storage
-  const imageName = `image-${image.params.timestamp}`;
+  const imageId = `ìmage-${image.params.timestamp}`;
+  const imageName = `${imageId}.webp`;
   const storageRef = ref(storage, `users/${userId}/${imageName}`);
   await uploadBytes(storageRef, blob);
   const fireStoreImageUrl = await getDownloadURL(storageRef);
@@ -32,8 +33,14 @@ export async function saveImage(userId: string, image: NewImageData) {
   await FileSystem.deleteAsync(uri, { idempotent: true });
 
   // Save the image data to Firebase Realtime Database
-  const userRef = RealTimeRef(realTimeDB, `users/${userId}/images/${imageName}`);
-  await set(userRef, { url: fireStoreImageUrl, name: imageName, seed: image.seed, ...image.params });
+  const userRef = RealTimeRef(realTimeDB, `users/${userId}/images/${imageId}`);
+  await set(userRef, { 
+    url: fireStoreImageUrl, 
+    name: imageName, 
+    seed: image.seed, 
+    id: imageId,
+    ...image.params 
+  });
 
   // Update the user's image count
   const countRef = RealTimeRef(realTimeDB, `users/${userId}/count`);
