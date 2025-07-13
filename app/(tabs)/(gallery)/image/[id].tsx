@@ -4,9 +4,7 @@ import { Image } from "expo-image";
 import { Stack, router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
-import secondary from "@/constants/colors/secondary";
 import formatDate from "@/utils/formatDate";
-
 import { getImageById } from "@/services/image/imagesService";
 import { useAuthStore } from "@/store/useAuthStore";
 import type {ImageData} from "@/types/index";
