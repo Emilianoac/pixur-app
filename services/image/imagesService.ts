@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { set, ref as RealTimeRef, runTransaction } from "firebase/database";
+import { set, ref as RealTimeRef, runTransaction, get } from "firebase/database";
 import { storage, realTimeDB } from "@/firebaseConfig";
 import type { NewImageData } from "@/types";
 
@@ -113,3 +113,18 @@ export async function generateImage(params: GenerateImageParams) {
     throw error;
   }
 };
+
+export async function getImageById(userId: string, imageId: string) {
+  try {
+    const imageRef = RealTimeRef(realTimeDB, `users/${userId}/images/${imageId}`);
+    const snapshot = await get(imageRef);
+    
+    if (!snapshot.exists()) {
+      throw new Error("Image not found");
+    }
+    return snapshot.val();
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    throw error;
+  }
+}

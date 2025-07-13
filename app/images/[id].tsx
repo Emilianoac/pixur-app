@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Image, ScrollView, Alert } from "react-native"
+import { View, Text, SafeAreaView, Image, ScrollView, Alert } from "react-native";
 import { Stack, router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
-
-import { ref, child, get } from "firebase/database";
-import { realTimeDB } from "@/firebaseConfig";
 
 import secondary from "@/constants/colors/secondary";
 import formatDate from "@/utils/formatDate";
 
-import type {ImageData} from "@/types/index";
+import { getImageById } from "@/services/image/imagesService";
 import { useAuthStore } from "@/store/useAuthStore";
+import type {ImageData} from "@/types/index";
 
 export default function ImageProfileScreen() {
   const user = useAuthStore((state) => state.user);
@@ -20,27 +18,22 @@ export default function ImageProfileScreen() {
   const [image, setImage] = useState<ImageData | null>(null);
 
   useEffect(() => {
-    // Si no hay usuario, redirigir a la pantalla de inicio
-    if (user === null) {
-      Alert.alert("Error", "You must be signed in to view this page.");
-      router.replace("/sign-in");
-      return;
+    async function handleGetImage() {
+      if (!user || !id) {
+        Alert.alert("Error", "Invalid user or image ID.");
+        router.replace("/gallery");
+        return;
+      }
+
+      try {
+        const imageData = await getImageById(user.id, id as string);
+        setImage(imageData);
+      } catch (error) {
+        Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred.");
+      }
     }
 
-    // Get the image from the database
-    const dbRef = ref(realTimeDB);
-    get(child(dbRef, `users/${user?.uid}/images/${id}`)).then((snapshot) => {
-      // If the image exists, set the image state
-      if (snapshot.exists()) {
-        setImage(snapshot.val());
-      } else {
-        console.log("No data available");
-        router.replace("/gallery")
-      }
-    }).catch((error) => {
-      console.error(error);
-    });
-
+    handleGetImage();
   }, []);
 
   return (
