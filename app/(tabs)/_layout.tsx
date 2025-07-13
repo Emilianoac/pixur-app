@@ -5,10 +5,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "@/constants/"
 import primary from "@/constants/colors/primary";
 import secondary from "@/constants/colors/secondary";
-import type { TabIconProps } from "@/types";
 import Loader from "@/components/Loader"
 import CustomHeader from "@/components/CustomHeader";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { TabIconProps } from "@/types";
 
 const TabIcon = ({
   icon, 
@@ -40,77 +40,74 @@ export default function TabsLayout() {
   if (!loading && !isLogged) return <Redirect href="/(auth)/sign-in"/>;
 
   return (
-    <SafeAreaView className="flex-1 bg-black " edges={["bottom","top"]}>
+    <SafeAreaView className="flex-1 bg-black" edges={["bottom","top"]}>
       <CustomHeader />
-      <Tabs
-        screenOptions={{
-          tabBarHideOnKeyboard: true,
-          tabBarShowLabel: false,  
-          tabBarActiveTintColor: primary.default,
-          tabBarInactiveTintColor: secondary[300],
-          tabBarStyle: {
-            height: 60,
-            paddingTop: 10,
-            backgroundColor: secondary[600],
-            borderTopWidth: 1,
-            borderColor: secondary[500],
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-          }
-        }}>
-        <Tabs.Screen 
-          name="create"
-          options={
-            {
-              title: "Create",
-              headerShown: false,
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon 
-                  icon={icons.plus} 
-                  color={color} 
-                  name="Create" 
-                  focused={focused}
-                />
-              )
+        <Tabs
+          screenOptions={{
+            tabBarHideOnKeyboard: true,
+            tabBarShowLabel: false,  
+            tabBarActiveTintColor: primary.default,
+            tabBarInactiveTintColor: secondary[300],
+            tabBarStyle: {
+              height: 60,
+              paddingTop: 10,
+              backgroundColor: secondary[600],
+              borderTopWidth: 3,
+              borderColor: secondary[500],
             }
-          }
-        />
-        <Tabs.Screen 
-          name="gallery"
-          options={
-            {
-              title: "Gallery",
-              headerShown: false,
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon 
-                  icon={icons.gallery} 
-                  color={color} 
-                  name="Gallery" 
-                  focused={focused}
-                />
-              )
+          }}>
+          <Tabs.Screen 
+            name="create"
+            options={
+              {
+                title: "Create",
+                headerShown: false,
+                tabBarIcon: ({ color, focused }) => (
+                  <TabIcon 
+                    icon={icons.plus} 
+                    color={color} 
+                    name="Create" 
+                    focused={focused}
+                  />
+                )
+              }
             }
-          }
-        />
-        <Tabs.Screen 
-          name="settings"
-          options={
-            {
-              title: "Settings",
-              headerShown: false,
-              tabBarIcon: ({ color, focused }) => (
-                <TabIcon 
-                  icon={icons.settings} 
-                  color={color} 
-                  name="Settings" 
-                  focused={focused}
-                />
-              ),
+          />
+          <Tabs.Screen 
+            name="(gallery)"
+            options={
+              {
+                title: "Gallery",
+                headerShown: false,
+                tabBarIcon: ({ color, focused }) => (
+                  <TabIcon 
+                    icon={icons.gallery} 
+                    color={color} 
+                    name="Gallery" 
+                    focused={focused}
+                  />
+                )
+              }
             }
-          }
-        />
-      </Tabs>
+          />
+          <Tabs.Screen 
+            name="settings"
+            options={
+              {
+                title: "Settings",
+                headerShown: false,
+                tabBarIcon: ({ color, focused }) => (
+                  <TabIcon 
+                    icon={icons.settings} 
+                    color={color} 
+                    name="Settings" 
+                    focused={focused}
+                  />
+                ),
+              }
+            }
+          />
+        </Tabs>
       <Loader isLoading={loading} />
       <StatusBar style="light" />
     </ SafeAreaView>

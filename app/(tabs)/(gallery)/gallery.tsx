@@ -29,7 +29,7 @@ export default  function ProfileScreen() {
                   <Link 
                     className="w-[32%] aspect-square" 
                     href={{
-                      pathname: "/images/[id]",
+                      pathname: "/image/[id]",
                       params: {id : image.id}
                     }}
                     key={index} 
