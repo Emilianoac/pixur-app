@@ -1,4 +1,5 @@
-import { View, SafeAreaView, ScrollView, Image, Pressable, Text} from "react-native"
+import { View, SafeAreaView, ScrollView, Pressable, Text} from "react-native"
+import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { ImageData } from "@/types";
@@ -29,7 +30,7 @@ export default  function ProfileScreen() {
                     className="w-[32%] aspect-square" 
                     href={{
                       pathname: "/images/[id]",
-                      params: {id : image.name}
+                      params: {id : image.id}
                     }}
                     key={index} 
                     asChild>
@@ -37,7 +38,7 @@ export default  function ProfileScreen() {
                       <View className="w-full h-full">
                         <Image 
                           source={{ uri: image.url }} 
-                          className="w-full aspect-square"
+                          style={{ width: '100%', aspectRatio: 1}}
                         />
                       </View>
                     </Pressable>

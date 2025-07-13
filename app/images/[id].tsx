@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { View, Text, SafeAreaView, Image, ScrollView, Alert } from "react-native";
+import { View, Text, SafeAreaView, ScrollView, Alert } from "react-native";
+import { Image } from "expo-image";
 import { Stack, router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
@@ -54,8 +55,8 @@ export default function ImageProfileScreen() {
                 <Text className="text-slate-400 mb-4">{ formatDate(image.timestamp) }</Text>
                 <Image 
                   source={{ uri: image.url }} 
-                  className="w-full aspect-square rounded-lg" 
-                  resizeMode="cover"
+                  style={{ width: '100%', aspectRatio: 1, borderRadius: 8 }} 
+                  contentFit="cover"
                 />
                 <View className="my-5">
                   <Text className="text-white font-pbold mb-1">Prompt</Text>
