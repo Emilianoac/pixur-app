@@ -10,6 +10,7 @@ export interface TabIconProps {
 export interface ImageData {
   url: string;
   name: string;
+  id: string;
   prompt: string;
   steps: number;
   negative_prompt: string;
