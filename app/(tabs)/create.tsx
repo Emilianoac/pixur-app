@@ -59,16 +59,21 @@ export default function CreateScreen() {
   }
 
   async function handleSave(image: ImageData) {
-    setLoading(true);
-    if (!user?.id) {
-      Alert.alert("Error", "You must be logged in to save an image");
-      setLoading(false);
-      return;
-    }
+    if (!user?.id) return Alert.alert("Error", "You must be logged in to save an image");
 
-    await saveImage(user.id, image);
-    setLoading(false);
-    setSavedImage(true);
+    setLoading(true);
+
+    try {
+      await saveImage(user.id, image);
+      setSavedImage(true);
+
+      Alert.alert("Success", "Image saved successfully");
+
+    } catch (error) {
+      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
   
   return (
