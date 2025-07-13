@@ -1,20 +1,17 @@
 import { View, SafeAreaView, ScrollView, Image, Alert, Text } from "react-native"
 import { useState} from "react"
 import Slider from "@react-native-community/slider";
-import * as FileSystem from "expo-file-system";
-import * as ImageManipulator from "expo-image-manipulator";
 
 import useCreateImage from "@/hooks/useCreateImage"
+import { useAuthStore } from "@/store/useAuthStore";
+import { saveImage } from "@/services/image/imagesService";
 import { icons } from "@/constants/index";
 import primaryColors from "@/constants/colors/primary"
-import { storage, realTimeDB } from "@/firebaseConfig"
-import { set, ref as RealTimeRef, runTransaction } from "firebase/database"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 
 import CustomButton from "@/components/CustomButton"
 import FormField from "@/components/FormField"
 import Loader from "@/components/Loader"
-import { useAuthStore } from "@/store/useAuthStore";
+
 
 interface FormData {
   prompt: string | null
@@ -71,38 +68,13 @@ export default function CreateScreen() {
 
   async function handleSave(image: ImageData) {
     setLoading(true);
+    if (!user?.id) {
+      Alert.alert("Error", "You must be logged in to save an image");
+      setLoading(false);
+      return;
+    }
 
-    // Compress and resize the image
-    const { uri } = await ImageManipulator.manipulateAsync(
-      `data:image/png;base64,${image.base64}`, 
-      [{ resize: { width: 512, height: 512 } }], 
-      { compress: 0.7, format: ImageManipulator.SaveFormat.WEBP }
-    );
-
-    // Convert the image to a blob
-    const response = await fetch(uri);
-    const blob = await response.blob();
-
-    // Upload the image to Firebase Storage
-    const imageName = `image-${image.params.timestamp}`
-    const storageRef = ref(storage, `users/${user?.uid}/${imageName}`);
-    await uploadBytes(storageRef, blob);
-    const fireStoreImageUrl = await getDownloadURL(storageRef);
-
-    // Delete the image from the device storage of the app
-    await FileSystem.deleteAsync(uri, { idempotent: true });
-
-    // Save the image data to Firebase Realtime Database
-    const userRef = RealTimeRef(realTimeDB, `users/${user?.uid}/images/${imageName}`);
-    await set(userRef, { url: fireStoreImageUrl, name: imageName, seed: image.seed , ...image.params });
-
-    // Update the user's image count
-    const countRef = RealTimeRef(realTimeDB, `users/${user?.uid}/count`);
-    runTransaction(countRef, (count) => {
-      count++;
-      return count;
-    })
-
+    await saveImage(user.id, image);
     setLoading(false);
     setSavedImage(true);
   }
