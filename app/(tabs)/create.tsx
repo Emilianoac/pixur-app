@@ -10,32 +10,18 @@ import primaryColors from "@/constants/colors/primary"
 import CustomButton from "@/components/CustomButton"
 import FormField from "@/components/FormField"
 import Loader from "@/components/Loader"
+import type { NewImageData } from "@/types";
 
 interface FormData {
   prompt: string | null
   steps: number
 }
 
-interface ImageData {
-  base64: string;
-  seed: number;
-  params: {
-    prompt: string ;
-    negative_prompt: string;
-    cfg_scale: number;
-    model: string;
-    dimensions: string;
-    steps: number;
-    samples: number;
-    timestamp: number;
-  }
-}
-
 export default function CreateScreen() {
   const user = useAuthStore((state) => state.user);
   const [savedImage, setSavedImage] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [image, setImage] = useState<ImageData | null>(null);
+  const [image, setImage] = useState<NewImageData | null>(null);
   const [formData, setFormData] = useState<FormData>({
     prompt: null,
     steps: 15
@@ -58,7 +44,7 @@ export default function CreateScreen() {
     }
   }
 
-  async function handleSave(image: ImageData) {
+  async function handleSave(image: NewImageData) {
     if (!user?.id) return Alert.alert("Error", "You must be logged in to save an image");
 
     setLoading(true);

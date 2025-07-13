@@ -3,27 +3,14 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { set, ref as RealTimeRef, runTransaction } from "firebase/database";
 import { storage, realTimeDB } from "@/firebaseConfig";
-interface ImageData {
-  base64: string;
-  seed: number;
-  params: {
-    prompt: string;
-    negative_prompt: string;
-    cfg_scale: number;
-    model: string;
-    dimensions: string;
-    steps: number;
-    samples: number;
-    timestamp: number;
-  };
-}
+import type { NewImageData } from "@/types";
 
 interface GenerateImageParams {
   prompt: string | null,
   steps: number,
 }
 
-export async function saveImage(userId: string, image: ImageData) {
+export async function saveImage(userId: string, image: NewImageData) {
   // Compress and resize the image
   const { uri } = await ImageManipulator.manipulateAsync(
     `data:image/png;base64,${image.base64}`,
@@ -55,7 +42,6 @@ export async function saveImage(userId: string, image: ImageData) {
     return count;
   });
 };
-
 
 export async function generateImage(params: GenerateImageParams) {
 

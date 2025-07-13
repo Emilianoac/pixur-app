@@ -20,9 +20,23 @@ export interface ImageData {
   timestamp: number;
 }
 
-
 export interface userData {
   uid: string;
   email: string;
   images: ImageData[];
+}
+
+export interface NewImageData {
+  base64: string;
+  seed: number;
+  params: {
+    prompt: string;
+    negative_prompt: string;
+    cfg_scale: number;
+    model: string;
+    dimensions: string;
+    steps: number;
+    samples: number;
+    timestamp: number;
+  };
 }
