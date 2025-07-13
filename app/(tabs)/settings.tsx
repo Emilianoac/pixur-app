@@ -8,7 +8,7 @@ import CustomButton from "@/components/CustomButton"
 import Loader from "@/components/Loader"
 import { useAuthStore } from "@/store/useAuthStore";
 
-export default function HomeScreen() {
+export default function SettingsScreen() {
   const userData = useAuthStore((state) => state.userData);
   const [loading, setLoading] = useState(false)
 

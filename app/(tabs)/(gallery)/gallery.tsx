@@ -4,7 +4,7 @@ import { Link } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { ImageData } from "@/types";
 
-export default  function ProfileScreen() {
+export default  function GalleryScreen() {
   const userData = useAuthStore((state) => state.userData);
 
   // Sort images by timestamp
