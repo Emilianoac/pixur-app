@@ -2,16 +2,14 @@ import { View, SafeAreaView, ScrollView, Image, Alert, Text } from "react-native
 import { useState} from "react"
 import Slider from "@react-native-community/slider";
 
-import useCreateImage from "@/hooks/useCreateImage"
 import { useAuthStore } from "@/store/useAuthStore";
-import { saveImage } from "@/services/image/imagesService";
+import { saveImage, generateImage } from "@/services/image/imagesService";
 import { icons } from "@/constants/index";
 import primaryColors from "@/constants/colors/primary"
 
 import CustomButton from "@/components/CustomButton"
 import FormField from "@/components/FormField"
 import Loader from "@/components/Loader"
-
 
 interface FormData {
   prompt: string | null
@@ -44,26 +42,20 @@ export default function CreateScreen() {
   })
 
   async function handleCreate() {
+    if (!formData.prompt ) return Alert.alert("Error", "You must add a prompt to generate an image");
+
     setImage(null);
     setLoading(true);
 
-    if (!formData.prompt ) {
-      Alert.alert("Error", "You must add a prompt to generate an image");
+    try {
+      const image = await generateImage(formData);
+      setImage(image);
+      setSavedImage(false);
+    } catch (error) {
+      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
+    } finally {
       setLoading(false);
-      return
-    };
-
-    // Create image using the API
-    const image = await useCreateImage(formData);
-
-    if (!image) {
-      setLoading(false)
-      return
-    } 
-
-    setImage(image);
-    setSavedImage(false);
-    setLoading(false);
+    }
   }
 
   async function handleSave(image: ImageData) {
