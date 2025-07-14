@@ -5,6 +5,7 @@ import CustomButton from "@/components/CustomButton"
 import {images } from "@/constants"
 import { Link } from "expo-router"
 import { signUp } from "@/utils/firebaseAuth"
+import AppBrand from "@/components/AppBrand"
 
 export default function SignUP() {
   const [form, setForm] = useState({ email: "", password: ""});
@@ -28,11 +29,7 @@ export default function SignUP() {
       <ScrollView>
         <View className="w-full h-[85vh] justify-center items-center px-4">
           <View className="w-full mt-4 items-center">
-            <Image 
-              source={images.logo} 
-              className="w-[130px] rounded-md" 
-              resizeMode="contain"
-            />
+            <AppBrand width="120"/>
             <Text className="text-white font-plight mt-1">AI Image generator</Text>
           </View>
 

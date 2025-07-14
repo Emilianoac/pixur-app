@@ -9,6 +9,7 @@ import { signIn } from "@/utils/firebaseAuth"
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
 import Loader from "@/components/Loader"
+import AppBrand from "@/components/AppBrand"
 
 export default function SignIn() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,11 +39,7 @@ export default function SignIn() {
       <ScrollView>
         <View className="w-full h-[85vh] justify-center items-center px-4">
           <View className="w-full mt-4 items-center">
-            <Image 
-              source={images.logo} 
-              className="w-[130px] rounded-md" 
-              resizeMode="contain"
-            />
+            <AppBrand width="120"/>
             <Text className="text-white font-plight mt-1">AI Image generator</Text>
           </View>
             
