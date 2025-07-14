@@ -1,15 +1,15 @@
-import { View, SafeAreaView, ScrollView, Image, Alert, Text } from "react-native"
-import { useState} from "react"
+import { View, SafeAreaView, ScrollView, Image, Alert, Text } from "react-native";
+import { useState} from "react";
 import Slider from "@react-native-community/slider";
 
 import { useAuthStore } from "@/store/useAuthStore";
 import { saveImage, generateImage } from "@/services/image/imagesService";
 import { icons } from "@/constants/index";
-import primaryColors from "@/constants/colors/primary"
+import primaryColors from "@/constants/colors/primary";
 
-import CustomButton from "@/components/CustomButton"
-import FormField from "@/components/FormField"
-import Loader from "@/components/Loader"
+import CustomButton from "@/components/CustomButton";
+import FormField from "@/components/FormField";
+import Loader from "@/components/Loader";
 import type { NewImageData } from "@/types";
 
 interface FormData {
@@ -19,13 +19,13 @@ interface FormData {
 
 export default function CreateScreen() {
   const user = useAuthStore((state) => state.user);
-  const [savedImage, setSavedImage] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [savedImage, setSavedImage] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<NewImageData | null>(null);
   const [formData, setFormData] = useState<FormData>({
     prompt: null,
     steps: 15
-  })
+  });
 
   async function handleCreate() {
     if (!formData.prompt ) return Alert.alert("Error", "You must add a prompt to generate an image");
@@ -67,9 +67,7 @@ export default function CreateScreen() {
       <ScrollView>
         <View className="p-4 items-center">
           <Image
-            source={ image ? 
-              { uri: `data:image/png;base64,${image.base64}`} : icons.thumbPreview
-            }
+            source={ image ? { uri: `data:image/png;base64,${image.base64}`} : icons.thumbPreview}
             className={`rounded-md mt-4 ${image ? 'w-full aspect-square' : 'w-[200px] h-[200px] opacity-10'}`}
             resizeMode={image ? "cover" : "contain"}
           />
@@ -108,12 +106,14 @@ export default function CreateScreen() {
             />
           </View>
 
-          {image && <CustomButton
-            title={savedImage ? "Image saved" : "Save Image"}
-            containerStyle="mt-4 bg-white"
-            disabled={loading || savedImage}
-            handlePress={() => handleSave(image)}
-          />}
+          {image && 
+            <CustomButton
+              title={savedImage ? "Image saved" : "Save Image"}
+              containerStyle="mt-4 bg-white"
+              disabled={loading || savedImage}
+              handlePress={() => handleSave(image)}
+            />
+          }
         </View>
       </ScrollView>
       <Loader 
