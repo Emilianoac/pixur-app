@@ -1,9 +1,8 @@
-import { View, Text, SafeAreaView, ScrollView, Image, Alert, KeyboardAvoidingView, Platform } from "react-native"
+import { View, Text, SafeAreaView, ScrollView, Alert, KeyboardAvoidingView, Platform } from "react-native"
 import {useState } from "react"
 import { router } from "expo-router"
 import { Link } from "expo-router"
 
-import { images } from "@/constants"
 import { signIn } from "@/utils/firebaseAuth"
 
 import FormField from "@/components/FormField"
