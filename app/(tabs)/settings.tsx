@@ -1,12 +1,13 @@
-import { View, SafeAreaView, ScrollView, Image } from "react-native";
+import { View, ScrollView, Image, Alert } from "react-native";
 import {useState } from "react";
-import {signOut} from "firebase/auth";
-import {auth} from "@/firebaseConfig";
+
 import {images} from "@/constants/index";
+import {signOutUser} from "@/services/auth/authService";
+import { useAuthStore } from "@/store/useAuthStore";
+
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import Loader from "@/components/Loader";
-import { useAuthStore } from "@/store/useAuthStore";
 
 export default function SettingsScreen() {
   const userData = useAuthStore((state) => state.userData);
@@ -15,8 +16,14 @@ export default function SettingsScreen() {
   // Sign out user
   async function handleSignOut() {
     setLoading(true);
-    await signOut(auth);
-    setLoading(false);
+
+    try {
+      await signOutUser();
+    } catch (error) {
+      Alert.alert("Error", error instanceof Error ? error.message : "Sign-out failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (

@@ -1,4 +1,4 @@
-import { onAuthStateChanged, type User, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, type User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { ref, set,  } from "firebase/database";
 import { auth, realTimeDB } from "@/firebaseConfig";
 
@@ -25,6 +25,15 @@ export async function signUp(email: string, password: string): Promise<User | nu
   } catch (error) {
     console.error(error);
     throw new Error(error instanceof Error ? error.message : "Sign-up failed");
+  }
+}
+
+export async function signOutUser(): Promise<void> {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error(error);
+    throw new Error(error instanceof Error ? error.message : "Sign-out failed");
   }
 }
 
