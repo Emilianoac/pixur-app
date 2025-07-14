@@ -3,7 +3,7 @@ import {useState} from "react"
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
 import { Link } from "expo-router"
-import { signUp } from "@/utils/firebaseAuth"
+import { signUp } from "@/services/auth/authService"
 import AppBrand from "@/components/AppBrand"
 
 export default function SignUP() {
