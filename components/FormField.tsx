@@ -30,6 +30,7 @@ export default function FormField({
         value={value ? value : ""}
         keyboardType={keyboardType ? keyboardType : "default"}
         onChangeText={handleChangeText}
+        editable={readOnly ? readOnly : false}
         readOnly={readOnly ? readOnly : false}
         multiline = {true}
         placeholder={placeholder}
