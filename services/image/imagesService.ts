@@ -130,45 +130,54 @@ export async function getImageById(userId: string, imageId: string) {
   }
 }
 
-
 export async function downloadImage(url: string) {
   const { status, canAskAgain } = await MediaLibrary.getPermissionsAsync();
 
   if (status !== "granted") {
     if (canAskAgain) {
-      const {status: newStatus} = await MediaLibrary.requestPermissionsAsync();
+      const { status: newStatus } = await MediaLibrary.requestPermissionsAsync();
       if (newStatus !== "granted") {
         throw new Error("Permission to access media library was denied");
       }
     } else {
-      throw new Error("Permission to access media library was denied and cannot be requested again, please enable it in settings.");
+      throw new Error(
+        "Permission to access media library was denied and cannot be requested again, please enable it in settings."
+      );
     }
   }
 
   let fileUri: string | null = null;
 
   try {
-    const extension = url.split('.').pop()?.split('?')[0] || 'jpg';
-    fileUri = `${FileSystem.documentDirectory}image_${Date.now()}.${extension}`;
+    const extension = url.split(".").pop()?.split("?")[0] || "jpg";
+
+    const folderUri = FileSystem.documentDirectory + "PixurTemp/";
+    const folderInfo = await FileSystem.getInfoAsync(folderUri);
+    if (!folderInfo.exists) {
+      await FileSystem.makeDirectoryAsync(folderUri, { intermediates: true });
+    }
+
+    fileUri = `${folderUri}image_${Date.now()}.${extension}`;
+
     const downloadResumable = FileSystem.createDownloadResumable(url, fileUri);
     const downloadResult = await downloadResumable.downloadAsync();
 
     if (!downloadResult) throw new Error("Failed to download image.");
 
     const { uri } = downloadResult;
-
     const asset = await MediaLibrary.createAssetAsync(uri);
     await MediaLibrary.createAlbumAsync("Pixur", asset, false);
-
   } catch (error) {
     console.error("Download error:", error);
-    throw new Error(error instanceof Error ? error.message : "An unexpected error occurred.");
+    throw new Error(
+      error instanceof Error ? error.message : "An unexpected error occurred."
+    );
   } finally {
     if (fileUri) {
       try {
         await FileSystem.deleteAsync(fileUri, { idempotent: true });
       } catch (deleteError) {
-        console.error("Error deleting temporary file:", deleteError);
+        console.warn("Error deleting temporary file:", deleteError);
       }
     }
   }
