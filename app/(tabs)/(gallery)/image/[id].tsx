@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { View, Text, ScrollView, Alert, Button, TouchableOpacity } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { View, Text, ScrollView, Alert, Button, TouchableOpacity, BackHandler} from "react-native";
 import { Image } from "expo-image";
 import { Stack, router } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams,useFocusEffect } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import formatDate from "@/utils/formatDate";
@@ -15,6 +15,7 @@ export default function ImageProfileScreen() {
   const user = useAuthStore((state) => state.user);
   const showLoader = useLoaderStore((state) => state.showLoader);
   const hideLoader = useLoaderStore((state) => state.hideLoader);
+  const isLoading = useLoaderStore((state) => state.isLoading);
 
   // Get the image id from the URL
   const { id } = useLocalSearchParams();
@@ -26,9 +27,7 @@ export default function ImageProfileScreen() {
       Alert.alert("Error", "Image URL is not available.");
       return;
     }
-
     showLoader("Downloading image...");
-
     try {
       await downloadImage(image.url);
       Alert.alert("Success", "Image downloaded successfully!");
@@ -38,6 +37,20 @@ export default function ImageProfileScreen() {
       hideLoader();
     }
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (isLoading) {
+         return true; 
+        }
+        return false; 
+      }
+      
+      const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => subscription.remove();
+    }, [isLoading])
+  )
 
   useEffect(() => {
     async function handleGetImage() {
