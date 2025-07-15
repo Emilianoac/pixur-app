@@ -1,10 +1,11 @@
-import { View, Text, SafeAreaView, ScrollView, Alert, KeyboardAvoidingView, Platform} from "react-native"
+import { View, Text, SafeAreaView, ScrollView, KeyboardAvoidingView, Platform} from "react-native"
 import {useState} from "react"
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
 import { Link } from "expo-router"
 
 import { signUp } from "@/services/auth/authService"
+import { showBaseToast } from "@/services/toast/toastService";
 import { useLoaderStore } from "@/store/useLoaderStore";
 
 import AppBrand from "@/components/AppBrand"
@@ -16,7 +17,11 @@ export default function SignUP() {
 
   async function handleSignUp() {
     if (form.email === "" || form.password === "") {
-      Alert.alert("Error", "You must complete all fields");
+      showBaseToast({
+        type: "error",
+        text1: "Authentication Error",
+        text2: "You must complete all fields",
+      });
       return;
     }
 
@@ -25,8 +30,11 @@ export default function SignUP() {
     try {
       await signUp(form.email, form.password);
     } catch (error) {
-      Alert.alert("Error", "An error occurred while signing up, try again"); 
-      console.error(error);
+      showBaseToast({
+        type: "error",
+        text1: "Authentication Error",
+        text2: error instanceof Error ? error.message : "An unexpected error occurred",
+      });
     } finally {
       hideLoader();
     }

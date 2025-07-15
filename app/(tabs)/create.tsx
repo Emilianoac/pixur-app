@@ -1,12 +1,13 @@
-import { View, SafeAreaView, ScrollView, Image, Alert, Text } from "react-native";
+import { View, SafeAreaView, ScrollView, Image, Text, Button } from "react-native";
 import { useState} from "react";
 import Slider from "@react-native-community/slider";
 
+import { icons } from "@/constants/index";
+import primaryColors from "@/constants/colors/primary";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useLoaderStore } from "@/store/useLoaderStore";
 import { saveImage, generateImage } from "@/services/image/imagesService";
-import { icons } from "@/constants/index";
-import primaryColors from "@/constants/colors/primary";
+import { showBaseToast } from "@/services/toast/toastService";
 
 import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
@@ -26,7 +27,14 @@ export default function CreateScreen() {
   const [formData, setFormData] = useState<FormData>({ prompt: null, steps: 15 });
 
   async function handleCreate() {
-    if (!formData.prompt ) return Alert.alert("Error", "You must add a prompt to generate an image");
+    if (!formData.prompt ) {
+      showBaseToast({
+        type: "error",
+        text1: "Error generating image",
+        text2: "You must enter a prompt to generate an image.",
+      });
+      return;
+    }
 
     setImage(null);
     showLoader("Generating image...");
@@ -35,15 +43,31 @@ export default function CreateScreen() {
       const image = await generateImage(formData);
       setImage(image);
       setSavedImage(false);
+      showBaseToast({
+        type: "success",
+        text1: "Image generated successfully",
+        text2: "You can now save or generate a new image.",
+      });
     } catch (error) {
-      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
+      showBaseToast({
+        type: "error",
+        text1: "Error generating image",
+        text2: error instanceof Error ? error.message : "An unexpected error occurred, please try again.",
+      });
     } finally {
       hideLoader();
     }
   }
 
   async function handleSave(image: NewImageData) {
-    if (!user?.id) return Alert.alert("Error", "You must be logged in to save an image");
+    if (!user?.id) {
+      showBaseToast({
+        type: "error",
+        text1: "Error saving image",
+        text2: "You must be logged in to save images.",
+      });
+      return;
+    }
 
     showLoader("Saving image...");
 
@@ -51,15 +75,23 @@ export default function CreateScreen() {
       await saveImage(user.id, image);
       setSavedImage(true);
 
-      Alert.alert("Success", "Image saved successfully");
+      showBaseToast({
+        type: "success",
+        text1: "Image saved successfully",
+        text2: "You can view it in your gallery.",
+      });
 
     } catch (error) {
-      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
+      showBaseToast({
+        type: "error",
+        text1: "Error saving image",
+        text2: error instanceof Error ? error.message : "An unexpected error occurred, please try again.",
+      });
     } finally {
       hideLoader();
     }
   }
-  
+
   return (
     <SafeAreaView className="bg-secondary-700 h-full">
       <ScrollView>
@@ -69,7 +101,6 @@ export default function CreateScreen() {
             className={`rounded-md mt-4 ${image ? 'w-full aspect-square' : 'w-[200px] h-[200px] opacity-10'}`}
             resizeMode={image ? "cover" : "contain"}
           />
-
           <View className="w-full">
             <FormField
               title="Prompt"

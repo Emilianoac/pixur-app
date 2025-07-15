@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { Stack, SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
+import Toast from "react-native-toast-message";
 import "./global.css";
+
 import { useAuthStore } from "@/store/useAuthStore";
 import { useLoaderStore } from "@/store/useLoaderStore";
 import Loader from "@/components/Loader";
@@ -60,6 +62,7 @@ export default function RootLayout() {
           options={{ headerShown: false}}
         />
       </Stack>
+      <Toast />
       <Loader isLoading={isLoading} message={loaderMessage} />
     </>
   );

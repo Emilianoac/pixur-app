@@ -1,7 +1,8 @@
-import { View, ScrollView, Image, Alert } from "react-native";
+import { View, ScrollView, Image } from "react-native";
 
 import {images} from "@/constants/index";
 import {signOutUser} from "@/services/auth/authService";
+import { showBaseToast } from "@/services/toast/toastService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useLoaderStore } from "@/store/useLoaderStore";
 
@@ -20,7 +21,11 @@ export default function SettingsScreen() {
     try {
       await signOutUser();
     } catch (error) {
-      Alert.alert("Error", error instanceof Error ? error.message : "Sign-out failed");
+      showBaseToast({
+        type: "error",
+        text1: "Error signing out",
+        text2: error instanceof Error ? error.message : "An unexpected error occurred, please try again.",
+      });
     } finally {
       hideLoader();
     }

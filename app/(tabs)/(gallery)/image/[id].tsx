@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, Alert, Button, TouchableOpacity, BackHandler} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, BackHandler} from "react-native";
 import { Image } from "expo-image";
 import { Stack, router } from "expo-router";
 import { useLocalSearchParams,useFocusEffect } from "expo-router";
@@ -7,6 +7,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import formatDate from "@/utils/formatDate";
 import { getImageById, downloadImage } from "@/services/image/imagesService";
+import { showBaseToast } from "@/services/toast/toastService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useLoaderStore } from "@/store/useLoaderStore";
 import type {ImageData} from "@/types/index";
@@ -24,15 +25,27 @@ export default function ImageProfileScreen() {
 
   async function handleDownloadImage() {
     if (!image || !image.url) {
-      Alert.alert("Error", "Image URL is not available.");
+      showBaseToast({
+        type: "error",
+        text1: "Error downloading image",
+        text2: "Image URL is not available.",
+      });
       return;
     }
     showLoader("Downloading image...");
     try {
       await downloadImage(image.url);
-      Alert.alert("Success", "Image downloaded successfully!");
+      showBaseToast({
+        type: "success",
+        text1: "Image downloaded successfully",
+        text2: "You can find it in your device's gallery.",
+      });
     } catch (error) {
-      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred.");
+      showBaseToast({
+        type: "error",
+        text1: "Error downloading image",
+        text2: error instanceof Error ? error.message : "An unexpected error occurred.",
+      });
     } finally {
       hideLoader();
     }
@@ -55,7 +68,11 @@ export default function ImageProfileScreen() {
   useEffect(() => {
     async function handleGetImage() {
       if (!user || !id) {
-        Alert.alert("Error", "Invalid user or image ID.");
+        showBaseToast({
+          type: "error",  
+          text1: "Error fetching image",
+          text2: "User or image ID is not valid.",
+        });
         router.replace("/gallery");
         return;
       }
@@ -64,7 +81,11 @@ export default function ImageProfileScreen() {
         const imageData = await getImageById(user.id, id as string);
         setImage(imageData);
       } catch (error) {
-        Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred.");
+        showBaseToast({
+          type: "error",
+          text1: "Error fetching image",
+          text2: error instanceof Error ? error.message : "An unexpected error occurred, please try again.",
+        });
       }
     }
 
