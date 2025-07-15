@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, Alert } from "react-native";
+import { View, Text, ScrollView, Alert, Button, TouchableOpacity } from "react-native";
 import { Image } from "expo-image";
 import { Stack, router } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import formatDate from "@/utils/formatDate";
-import { getImageById } from "@/services/image/imagesService";
+import { getImageById, downloadImage } from "@/services/image/imagesService";
 import { useAuthStore } from "@/store/useAuthStore";
 import type {ImageData} from "@/types/index";
 
@@ -14,7 +15,27 @@ export default function ImageProfileScreen() {
 
   // Get the image id from the URL
   const { id } = useLocalSearchParams();
+  
   const [image, setImage] = useState<ImageData | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  async function handleDownloadImage() {
+    if (!image || !image.url) {
+      Alert.alert("Error", "Image URL is not available.");
+      return;
+    }
+
+    setIsDownloading(true);
+
+    try {
+      await downloadImage(image.url);
+      Alert.alert("Success", "Image downloaded successfully!");
+    } catch (error) {
+      Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred.");
+    } finally {
+      setIsDownloading(false);
+    }
+  }
 
   useEffect(() => {
     async function handleGetImage() {
@@ -45,7 +66,16 @@ export default function ImageProfileScreen() {
         <View className="justify-center items-center px-4">
           {image &&
             <View>
-              <Text className="text-white text-2xl font-pbold mb-2 mt-4">Image Details</Text>
+              <Text className="text-white text-2xl font-pbold mb-4 mt-4">Image Details</Text>
+              <TouchableOpacity 
+                onPress={handleDownloadImage}
+                disabled={isDownloading}
+                className="flex-row items-center gap-2 bg-primary-500 w-[150px] justify-center rounded-lg p-2">
+                  <Text className="text-white text-sm">
+                    Download Image
+                  </Text>
+                  <FontAwesome5 name="download" size={15} color="white" />
+              </TouchableOpacity>
               <Text className="text-slate-400 mb-4 mt-4">{ formatDate(image.timestamp) }</Text>
               <Image 
                 source={{ uri: image.url }} 
