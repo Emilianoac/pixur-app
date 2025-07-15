@@ -3,11 +3,16 @@ import {useState} from "react"
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
 import { Link } from "expo-router"
+
 import { signUp } from "@/services/auth/authService"
+import { useLoaderStore } from "@/store/useLoaderStore";
+
 import AppBrand from "@/components/AppBrand"
 
 export default function SignUP() {
   const [form, setForm] = useState({ email: "", password: ""});
+  const showLoader = useLoaderStore((state) => state.showLoader);
+  const hideLoader = useLoaderStore((state) => state.hideLoader);
 
   async function handleSignUp() {
     if (form.email === "" || form.password === "") {
@@ -15,11 +20,15 @@ export default function SignUP() {
       return;
     }
 
+    showLoader();
+
     try {
       await signUp(form.email, form.password);
     } catch (error) {
       Alert.alert("Error", "An error occurred while signing up, try again"); 
       console.error(error);
+    } finally {
+      hideLoader();
     }
   };
 

@@ -4,15 +4,16 @@ import { router } from "expo-router"
 import { Link } from "expo-router"
 
 import { signIn } from "@/services/auth/authService";
+import { useLoaderStore } from "@/store/useLoaderStore";
 
 import FormField from "@/components/FormField"
 import CustomButton from "@/components/CustomButton"
-import Loader from "@/components/Loader"
 import AppBrand from "@/components/AppBrand"
 
 export default function SignIn() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const showLoader = useLoaderStore((state) => state.showLoader);
+  const hideLoader = useLoaderStore((state) => state.hideLoader);
 
   async function handleSignIn() {
     if (form.email === "" || form.password === "") {
@@ -20,7 +21,7 @@ export default function SignIn() {
       return;
     }
 
-    setIsSubmitting(true);
+    showLoader();
     
     try {
       await signIn(form.email, form.password);
@@ -29,7 +30,7 @@ export default function SignIn() {
     } catch (error: any) {
       Alert.alert("Error", "An error occurred while signing in, try again");
     } finally {
-      setIsSubmitting(false);
+      hideLoader();
     }
   }
 
@@ -73,7 +74,6 @@ export default function SignIn() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Loader isLoading={isSubmitting}/>
     </SafeAreaView>
   )
 }

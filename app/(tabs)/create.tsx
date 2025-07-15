@@ -3,13 +3,13 @@ import { useState} from "react";
 import Slider from "@react-native-community/slider";
 
 import { useAuthStore } from "@/store/useAuthStore";
+import { useLoaderStore } from "@/store/useLoaderStore";
 import { saveImage, generateImage } from "@/services/image/imagesService";
 import { icons } from "@/constants/index";
 import primaryColors from "@/constants/colors/primary";
 
 import CustomButton from "@/components/CustomButton";
 import FormField from "@/components/FormField";
-import Loader from "@/components/Loader";
 import type { NewImageData } from "@/types";
 
 interface FormData {
@@ -19,19 +19,17 @@ interface FormData {
 
 export default function CreateScreen() {
   const user = useAuthStore((state) => state.user);
+  const showLoader = useLoaderStore((state) => state.showLoader);
+  const hideLoader = useLoaderStore((state) => state.hideLoader);
   const [savedImage, setSavedImage] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<NewImageData | null>(null);
-  const [formData, setFormData] = useState<FormData>({
-    prompt: null,
-    steps: 15
-  });
+  const [formData, setFormData] = useState<FormData>({ prompt: null, steps: 15 });
 
   async function handleCreate() {
     if (!formData.prompt ) return Alert.alert("Error", "You must add a prompt to generate an image");
 
     setImage(null);
-    setLoading(true);
+    showLoader("Generating image...");
 
     try {
       const image = await generateImage(formData);
@@ -40,14 +38,14 @@ export default function CreateScreen() {
     } catch (error) {
       Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
     } finally {
-      setLoading(false);
+      hideLoader();
     }
   }
 
   async function handleSave(image: NewImageData) {
     if (!user?.id) return Alert.alert("Error", "You must be logged in to save an image");
 
-    setLoading(true);
+    showLoader("Saving image...");
 
     try {
       await saveImage(user.id, image);
@@ -58,7 +56,7 @@ export default function CreateScreen() {
     } catch (error) {
       Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred, please try again.");
     } finally {
-      setLoading(false);
+      hideLoader();
     }
   }
   
@@ -101,7 +99,7 @@ export default function CreateScreen() {
             <CustomButton
               containerStyle="mt-4"
               title={image ? "Generate new image" : "Generate image"}
-              disabled={loading || !formData.prompt}
+              disabled={!formData.prompt}
               handlePress={handleCreate}
             />
           </View>
@@ -110,16 +108,12 @@ export default function CreateScreen() {
             <CustomButton
               title={savedImage ? "Image saved" : "Save Image"}
               containerStyle="mt-4 bg-white"
-              disabled={loading || savedImage}
+              disabled={savedImage}
               handlePress={() => handleSave(image)}
             />
           }
         </View>
       </ScrollView>
-      <Loader 
-        isLoading={loading} 
-        message={loading && !image ? "Generating image..." : "Saving image..."} 
-      />
     </SafeAreaView>
   )
 }

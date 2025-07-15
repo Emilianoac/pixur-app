@@ -3,12 +3,16 @@ import { Stack, SplashScreen } from "expo-router";
 import { useFonts } from "expo-font";
 import "./global.css";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useLoaderStore } from "@/store/useLoaderStore";
+import Loader from "@/components/Loader";
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const initAuthListener = useAuthStore((state) => state.initAuthListener);
+  const isLoading = useLoaderStore((state) => state.isLoading);
+  const loaderMessage = useLoaderStore((state) => state.message);
 
   useEffect(() => {
     const unsubscribe = initAuthListener();
@@ -45,15 +49,18 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen 
-        name="(tabs)" 
-        options={{ headerShown: false}}
-      />
-      <Stack.Screen 
-        name="(auth)" 
-        options={{ headerShown: false}}
-      />
-    </Stack>
+    <>
+      <Stack>
+        <Stack.Screen 
+          name="(tabs)" 
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen 
+          name="(auth)" 
+          options={{ headerShown: false}}
+        />
+      </Stack>
+      <Loader isLoading={isLoading} message={loaderMessage} />
+    </>
   );
 }

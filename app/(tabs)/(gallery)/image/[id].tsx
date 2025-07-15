@@ -8,16 +8,18 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import formatDate from "@/utils/formatDate";
 import { getImageById, downloadImage } from "@/services/image/imagesService";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useLoaderStore } from "@/store/useLoaderStore";
 import type {ImageData} from "@/types/index";
 
 export default function ImageProfileScreen() {
   const user = useAuthStore((state) => state.user);
+  const showLoader = useLoaderStore((state) => state.showLoader);
+  const hideLoader = useLoaderStore((state) => state.hideLoader);
 
   // Get the image id from the URL
   const { id } = useLocalSearchParams();
   
   const [image, setImage] = useState<ImageData | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   async function handleDownloadImage() {
     if (!image || !image.url) {
@@ -25,7 +27,7 @@ export default function ImageProfileScreen() {
       return;
     }
 
-    setIsDownloading(true);
+    showLoader("Downloading image...");
 
     try {
       await downloadImage(image.url);
@@ -33,7 +35,7 @@ export default function ImageProfileScreen() {
     } catch (error) {
       Alert.alert("Error", error instanceof Error ? error.message : "An unexpected error occurred.");
     } finally {
-      setIsDownloading(false);
+      hideLoader();
     }
   }
 
@@ -69,7 +71,6 @@ export default function ImageProfileScreen() {
               <Text className="text-white text-2xl font-pbold mb-4 mt-4">Image Details</Text>
               <TouchableOpacity 
                 onPress={handleDownloadImage}
-                disabled={isDownloading}
                 className="flex-row items-center gap-2 bg-primary-500 w-[150px] justify-center rounded-lg p-2">
                   <Text className="text-white text-sm">
                     Download Image
