@@ -1,5 +1,6 @@
 import * as FileSystem from "expo-file-system";
 import * as ImageManipulator from "expo-image-manipulator";
+import * as MediaLibrary from "expo-media-library";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { set, ref as RealTimeRef, runTransaction, get } from "firebase/database";
 import { storage, realTimeDB } from "@/firebaseConfig";
@@ -14,8 +15,8 @@ export async function saveImage(userId: string, image: NewImageData) {
   // Compress and resize the image
   const { uri } = await ImageManipulator.manipulateAsync(
     `data:image/png;base64,${image.base64}`,
-    [{ resize: { width: 512, height: 512 } }],
-    { compress: 0.7, format: ImageManipulator.SaveFormat.WEBP }
+    [],
+    { compress: 0.9, format: ImageManipulator.SaveFormat.WEBP }
   );
 
   // Convert the image to a blob
@@ -126,5 +127,49 @@ export async function getImageById(userId: string, imageId: string) {
   } catch (error) {
     console.error("Error fetching image:", error);
     throw error;
+  }
+}
+
+
+export async function downloadImage(url: string) {
+  const { status, canAskAgain } = await MediaLibrary.getPermissionsAsync();
+
+  if (status !== "granted") {
+    if (canAskAgain) {
+      const {status: newStatus} = await MediaLibrary.requestPermissionsAsync();
+      if (newStatus !== "granted") {
+        throw new Error("Permission to access media library was denied");
+      }
+    } else {
+      throw new Error("Permission to access media library was denied and cannot be requested again, please enable it in settings.");
+    }
+  }
+
+  let fileUri: string | null = null;
+
+  try {
+    const extension = url.split('.').pop()?.split('?')[0] || 'jpg';
+    fileUri = `${FileSystem.documentDirectory}image_${Date.now()}.${extension}`;
+    const downloadResumable = FileSystem.createDownloadResumable(url, fileUri);
+    const downloadResult = await downloadResumable.downloadAsync();
+
+    if (!downloadResult) throw new Error("Failed to download image.");
+
+    const { uri } = downloadResult;
+
+    const asset = await MediaLibrary.createAssetAsync(uri);
+    await MediaLibrary.createAlbumAsync("Pixur", asset, false);
+
+  } catch (error) {
+    console.error("Download error:", error);
+    throw new Error(error instanceof Error ? error.message : "An unexpected error occurred.");
+  } finally {
+    if (fileUri) {
+      try {
+        await FileSystem.deleteAsync(fileUri, { idempotent: true });
+      } catch (deleteError) {
+        console.error("Error deleting temporary file:", deleteError);
+      }
+    }
   }
 }
